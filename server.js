@@ -114,10 +114,16 @@ async function fetchCompetitorAds(query, opts = {}) {
   if (!APIFY_TOKEN) return [];
   const url = `https://api.apify.com/v2/acts/${APIFY_ACTOR_PATH}/run-sync-get-dataset-items?token=${APIFY_TOKEN}`;
   const input = {
-    searchQuery: query, q: query,
+    searchQuery: query,
     country: opts.country || 'US',
     activeStatus: opts.activeStatus || 'active',
-    maxResults: opts.maxResults || 30
+    adType: opts.adType || 'ALL',
+    maxResults: opts.maxResults || 30,
+    enableAiAnalysis: false,
+    proxyConfiguration: {
+      useApifyProxy: true,
+      apifyProxyGroups: ['RESIDENTIAL']
+    }
   };
   const resp = await axios.post(url, input, { timeout: 120000 });
   return resp.data || [];
