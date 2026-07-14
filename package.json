@@ -1,0 +1,14 @@
+{
+  "name": "keystone-growth-engine",
+  "version": "1.0.0",
+  "description": "Unified backend: Keystone's own Meta ad performance + competitor winning-ad intelligence + Claude creative generation, approval-gated before Meta ad creation.",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5",
+    "axios": "^1.7.2",
+    "dotenv": "^16.4.5",
+    "node-cron": "^3.0.3"
+  }
+}
