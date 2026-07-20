@@ -52,7 +52,8 @@ function detectService(adName = '') {
   if (n.includes('pressure') || n.includes('power wash')) return 'pressure washing';
   if (n.includes('office')) return 'office cleaning';
   if (n.includes('maintenance') || n.includes('property')) return 'property maintenance';
-  return 'commercial cleaning';
+  if (n.includes('clean')) return 'commercial cleaning';
+  return 'other'; // doesn't match any Keystone service — likely a different business sharing this ad account
 }
 function extractAction(actions, type) {
   if (!actions) return 0;
@@ -279,6 +280,7 @@ app.get('/api/health', (req, res) => res.json({ ok: true, lastSync: db.lastSync 
 
 app.get('/api/ads/winning', (req, res) => res.json(db.adSnapshot.filter(a => a.status === 'winning')));
 app.get('/api/ads/needs-fixing', (req, res) => res.json(db.adSnapshot.filter(a => a.status === 'needs_fixing')));
+app.get('/api/ads/all', (req, res) => res.json(db.adSnapshot));
 app.get('/api/drafts', (req, res) => {
   const { status } = req.query;
   res.json(status ? db.drafts.filter(d => d.status === status) : db.drafts);
@@ -340,7 +342,7 @@ async function runDailySync() {
     db.lastSync = new Date().toISOString();
     results.keystoneSynced = classified.length;
 
-    const needsFixing = classified.filter(a => a.status === 'needs_fixing');
+    const needsFixing = classified.filter(a => a.status === 'needs_fixing' && a.service !== 'other');
     results.needsFixing = needsFixing.length;
     for (const ad of needsFixing) {
       const alreadyPending = db.drafts.some(d => d.sourceAdId === ad.adId && d.status === 'pending');
